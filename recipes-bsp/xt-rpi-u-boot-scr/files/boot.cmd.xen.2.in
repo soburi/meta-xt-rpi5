@@ -1,7 +1,5 @@
 fdt chosen
 
-fdt set /chosen xen,dom0-bootargs "@@DOM0_BOOTARGS@@";
-fdt set /chosen xen,xen-bootargs "@@XEN_BOOTARGS@@";
 fatload @@BOOT_MEDIA@@ 0 @@XENPOLICY_IMG_ADDR@@ @@XENPOLICY_IMAGE@@
 fdt set /chosen/xenpolicy reg <0x0 @@XENPOLICY_IMG_ADDR@@ 0x0 0x${filesize} >
 
@@ -17,6 +15,4 @@ fdt set /chosen/domD/module@@@DOMD_IMG_ADDR@@ reg <0x0 @@DOMD_IMG_ADDR@@ 0x0 0x$
 fdt mknod /chosen/domD module@@@DOMD_DTB_ADDR@@
 fdt set /chosen/domD/module@@@DOMD_DTB_ADDR@@ compatible  "multiboot,device-tree" "multiboot,module"
 fatload @@BOOT_MEDIA@@ 0 @@DOMD_DTB_ADDR@@ @@DOMD_DTB@@
-fdt set /chosen/domD/module@@@DOMD_DTB_ADDR@@ reg <0x0 @@DOMD_DTB_ADDR@@ 0x0 0x6000 >
-fdt addr @@DOMD_DTB_ADDR@@
-fdt resize 4096
+fdt set /chosen/domD/module@@@DOMD_DTB_ADDR@@ reg <0x0 @@DOMD_DTB_ADDR@@ 0x0 0x${filesize} >

@@ -41,20 +41,22 @@ DOMD_BOOTARGS ?= "console=ttyAMA0 earlycon=xen earlyprintk=xen clk_ignore_unused
 
 do_compile() {
     cat ${WORKDIR}/boot.cmd.xen.1.in > ${WORKDIR}/${TEMPLATE_FILE}
-    if ${@bb.utils.contains("MACHINE_FEATURES", "domd_mmc", "true", "false" ,d)}; then
-        echo "fatload ${BOOT_MEDIA} 0 ${XEN_DTBO_ADDR} ${MMC_PASSTHROUGH_DTBO}" >> ${WORKDIR}/${TEMPLATE_FILE}
-        echo "fdt apply ${XEN_DTBO_ADDR}" >> ${WORKDIR}/${TEMPLATE_FILE}
-    fi
-    if ${@bb.utils.contains("MACHINE_FEATURES", "domd_usb", "true", "false" ,d)}; then
-        echo "fatload ${BOOT_MEDIA} 0 ${XEN_DTBO_ADDR} ${USB_PASSTHROUGH_DTBO}" >> ${WORKDIR}/${TEMPLATE_FILE}
-        echo "fdt apply ${XEN_DTBO_ADDR}" >> ${WORKDIR}/${TEMPLATE_FILE}
-    fi
+#    if ${@bb.utils.contains("MACHINE_FEATURES", "domd_mmc", "true", "false" ,d)}; then
+#        echo "fatload ${BOOT_MEDIA} 0 ${XEN_DTBO_ADDR} ${MMC_PASSTHROUGH_DTBO}" >> ${WORKDIR}/${TEMPLATE_FILE}
+#        echo "fdt apply ${XEN_DTBO_ADDR}" >> ${WORKDIR}/${TEMPLATE_FILE}
+#    fi
+#    if ${@bb.utils.contains("MACHINE_FEATURES", "domd_usb", "true", "false" ,d)}; then
+#        echo "fatload ${BOOT_MEDIA} 0 ${XEN_DTBO_ADDR} ${USB_PASSTHROUGH_DTBO}" >> ${WORKDIR}/${TEMPLATE_FILE}
+#        echo "fdt apply ${XEN_DTBO_ADDR}" >> ${WORKDIR}/${TEMPLATE_FILE}
+#    fi
 
     cat ${WORKDIR}/boot.cmd.xen.2.in >> ${WORKDIR}/${TEMPLATE_FILE}
-    for dtbo in ${DOMD_OVERLAYS}; do
-        echo "fatload ${BOOT_MEDIA} 0 ${XEN_DTBO_ADDR} $dtbo" >> ${WORKDIR}/${TEMPLATE_FILE}
-        echo "fdt apply ${XEN_DTBO_ADDR}" >> ${WORKDIR}/${TEMPLATE_FILE}
-    done
+#    for dtbo in ${DOMD_OVERLAYS}; do
+#	local DOMD_DTB_ADDR_DEC=$(printf %d ${DOMD_DTB_ADDR})
+#	local DOMD_DTBO_ADDR=$(printf 0x%X $(expr ${DOMD_DTB_ADDR_DEC} + 1048576))
+#        echo "fatload ${BOOT_MEDIA} 0 ${DOMD_DTBO_ADDR} $dtbo" >> ${WORKDIR}/${TEMPLATE_FILE}
+#        echo "fdt apply ${DOMD_DTBO_ADDR}" >> ${WORKDIR}/${TEMPLATE_FILE}
+#    done
 
     cat ${WORKDIR}/boot.cmd.xen.3.in >> ${WORKDIR}/${TEMPLATE_FILE}
     sed -e 's/@@BOOT_MEDIA@@/${BOOT_MEDIA}/g' \
