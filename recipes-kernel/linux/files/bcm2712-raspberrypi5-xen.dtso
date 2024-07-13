@@ -3,29 +3,31 @@
  *
  * SPDX-License-Identifier: Apache-2.0
 */
-/dts-v1/;
-/plugin/;
+#include "bcm2712-rpi-5-b.dts"
 
-&chosen {
-	#address-cells = <0x2>;
-	#size-cells = <0x2>;
-	xenpolicy {
-		compatible = "xen,xsm-policy", "multiboot-module";
-	};
-	dom0 {
-		compatible = "multiboot,kernel", "multiboot,module";
-	};
-	domD {
-		compatible = "xen,domain";
+/ {
+	chosen {
 		#address-cells = <0x2>;
 		#size-cells = <0x2>;
-		memory = <0x0 0x80000>;
-		vpl011 = <0x1>;
-		direct-map;
-		cpus = <0x1>;
-		xen,static-mem = <0x0 0x50000000 0x0 0x20000000>;
-		xen,enhanced = "enabled";
-		xen,tee = "optee";
+		xen,xen-bootargs = "console=dtuart dtuart=/soc/serial@7d001000 dom0_mem=128M dom0_max_vcpus=1 xsm=flask flask=permissive";
+		xen,dom0-bootargs = "console=hvc0 earlycon=xen earlyprintk=xen clk_ignore_unused root=/dev/ram0";
+		xenpolicy {
+			compatible = "xen,xsm-policy", "multiboot-module";
+		};
+		dom0 {
+			compatible = "multiboot,kernel", "multiboot,module";
+		};
+		domD {
+			compatible = "xen,domain";
+			#address-cells = <0x2>;
+			#size-cells = <0x2>;
+			memory = <0x0 0x80000>;
+			vpl011 = <0x1>;
+			direct-map;
+			cpus = <0x1>;
+			xen,static-mem = <0x0 0x50000000 0x0 0x20000000>;
+			xen,enhanced = "enabled";
+		};
 	};
 };
 
@@ -40,17 +42,12 @@
 /*
  * HACK there is number of uarts use same IRQ, so XEN fails when uses
  * _uart0 as console uart.
- * Delete interrupts info and disable devices;
+ * Remove unused uarts to avoid failure
  */
-&_uart2 {
-	interrupts = <>;
-	status = "disabled";
-};
-&_uart5 {
-	interrupts = <>;
-	status = "disabled";
-};
+/delete-node/   &_uart2;
+/delete-node/   &_uart5;
 
+&sdio1          { xen,passthrough; };
 &gio_aon        { xen,passthrough; };
 &rp1_eth        { xen,passthrough; };
 &pcie2          { xen,passthrough; };
